@@ -24,6 +24,7 @@
 }
         </style>
         <script src="js/Three.js"></script>
+        <!--<script src="js/three.min.js"></script>-->
 <script src="js/Detector.js"></script>
 <!--<script src="js/Stats.js"></script>
 <script src="js/OrbitControls.js"></script>-->
@@ -37,16 +38,21 @@
 <script src="js/vr.js"></script>
 <script src="js/gamepad.js"></script>
 
-<!--Oculus Rift Support-->
+<!--jquery-->
 
-<script src="js/html2canvas.js"></script>
-<script src="js/rasterizeHTML.allinone.js"></script>
 <!-- jQuery code to display an information button and box when clicked. -->
 <script src="js/jquery-1.9.1.js"></script>
 <script src="js/jquery-ui.js"></script>
 <!-- <link rel=stylesheet href="css/jquery-ui.css" />
 <link rel=stylesheet href="css/info.css"/> -->
 <script src="js/info.js"></script>
+
+<!--rendering the earth -->
+<script src='js/threex.planets.js'></script>
+<script src='js/threex.atmospherematerial.js'></script>
+<!-- include for threex.glowdatgui -->
+<!--<script src='vendor/three.js/examples/js/libs/dat.gui.min.js'></script> -->
+<script src="js/threex.atmospheredatgui.js"></script>
 <!-- ------------------------------------------------------------ -->
 
 <!-- <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div> -->
@@ -66,22 +72,25 @@ var keyboard = new THREEx.KeyboardState();
 
 // custom global variables
 var video, videoImage, videoImageContext, videoTexture;
+var movieMaterial=	new THREE.MeshBasicMaterial( { overdraw: true, side:THREE.DoubleSide } );
 
 var riftEffect;
 
 var render=menuRender;
-
-var update=videoUpdate;
+var update = menuUpdate;
+var gamepadPressed = menuGamepadPressed;
 
 var menuDiv, menuCanvas, menuImageContext, menuTexture;
 
 var menuIndex=0;
-var BASE_MENU=[{name:'movies', action:function(){gotoMenu(MOVIE_MENU);}},
-				{name:'flight map', action:showMap},
-				{name:'games', action:function(){gotoMenu(GAMES_MENU);}}];
+var BASE_MENU=[{name:'Movies', action:function(){showMenu(MOVIE_MENU);}},
+				{name:'Flight Map', action:showMap},
+				{name:'Games', action:function(){showMenu(GAMES_MENU);}}];
 var menuState = BASE_MENU;
-var MOVIE_MENU=[];
-var GAMES_MENU=[];
+var MOVIE_MENU=[{name:'Sintel', action:function(){showVideo("videos/sintel.ogv");}},
+				{name:'Big Buck Bunny', action:function(){showVideo("videos/Big_Buck_Bunny_small.ogv");}},
+				{name:'Back...', action:function(){showMenu(BASE_MENU);}}];
+var GAMES_MENU=[]; 
 
 
 var MOUSE_SPEED = 0.005;
@@ -90,6 +99,10 @@ var GAMEPAD_SPEED = 0.04;
 var DEADZONE = 0.2;
 
 var WORLD_FACTOR = 1.0;
+
+var PLANE_LAT;
+var PLANE_LONG;
+
 var OculusRift = {
   // Parameters from the Oculus Rift DK1
   hResolution: 1280,
@@ -113,6 +126,29 @@ var BaseRotationEuler = new THREE.Vector3();
 
 var VRState = null;
 
+//EARTH
+
+var onEarthRenderFcts= [];
+var earthScene	= new THREE.Scene();
+var earthCanvas;
+var earthContext;
+var earthTexture;
+var earthSphere;
+var earthImageSource;
+
+var earthLight	= new THREE.AmbientLight( 0x222222 )
+
+var starSphere	= THREEx.Planets.createStarfield();
+
+var containerEarth	= new THREE.Object3D()
+var moonMesh	= THREEx.Planets.createMoon()
+var earthMesh	= THREEx.Planets.createEarth()
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		loop runner							//
+	//////////////////////////////////////////////////////////////////////////////////
+	var lastTimeMsec= null
 
 // Utility function
 // ----------------------------------------------
@@ -146,26 +182,71 @@ function requestCurrentFlight(callback)
 {
 var oReq = new XMLHttpRequest();
 
-oReq.onload = function(){callback(JSON.parse(this))};
-oReq.open("get", "http://jsonp.jit.su/?url=https%3A%2F%2Fapi.gogoair.com%2Fv1%2Ftest%2Faal%2Fstatustray%3Fapikey%3DLoB9jsKwwpye2HfdGp3ds7rbMGYuj6rA", true);
+oReq.onload = function(){callback(JSON.parse(this.response))};
+//oReq.open("get", "http://jsonp.jit.su/?url=https%3A%2F%2Fapi.gogoair.com%2Fv1%2Ftest%2Faal%2Fstatustray%3Fapikey%3DLoB9jsKwwpye2HfdGp3ds7rbMGYuj6rA", true);
+oReq.open("get","http://jsonp.jit.su/?url=http%3A%2F%2Fgogotomcat-masstroy.rhcloud.com%2Fstatustray",true);
 oReq.send();
-"http://jsonp.jit.su/?url=https%3A%2F%2Fapi.gogoair.com%2Fv1%2Faircraft%2Ftailno%2F"+tailNo+"%3Fapikey%3DLoB9jsKwwpye2HfdGp3ds7rbMGYuj6rA"
+
+}
+
+function updateFlightLoc()
+{
+requestCurrentFlight(function(x){console.log(x.Response);PLANE_LAT=x.Response.flightInfo.latitude;PLANE_LONG=x.Response.flightInfo.longitude;drawEarthFlat();setTimeout(updateFlightLoc, 30000);});
 }
 
 function requestInfoForTailNo(tailNo, callback)
 {
 var oReq = new XMLHttpRequest();
 oReq.onload = function(){callback(JSON.parse(this))};
-oReq.open("get", "http://jsonp.jit.su/?url=https%3A%2F%2Fapi.gogoair.com%2Fv1%2Ftest%2Faal%2Fstatustray%3Fapikey%3DLoB9jsKwwpye2HfdGp3ds7rbMGYuj6rA", true);
+oReq.open("get", "http://jsonp.jit.su/?url=https%3A%2F%2Fapi.gogoair.com%2Fv1%2Faircraft%2Ftailno%2F"+tailNo+"%3Fapikey%3DLoB9jsKwwpye2HfdGp3ds7rbMGYuj6rA", true);
 oReq.send();
+}
+
+function menuGamepadPressed(e)
+{
+	if (e.control == "FACE_1") { //"A" or right on the buffalo => Select
+		if(menuState.length<=0) return;
+		else menuIndex=((menuIndex%menuState.length)+menuState.length)%menuState.length;
+		menuState[menuIndex].action();
+	}
+    else if (e.control == "FACE_2") { //"B" or down on the buffalo
+      menuIndex=menuIndex+1;
+      showMenu();
+    } else if (e.control == "FACE_3") //"X" or up on the buffalo
+     {
+      menuIndex=menuIndex-1;
+      showMenu();
+    }
+    else if (e.control == "FACE_4") //"Y" or left on the buffalo
+     {
+      menuIndex=0;
+      showMenu(BASE_MENU);
+    }
+}
+
+function videoGamepadPressed(e)
+{
+	if (e.control == "FACE_4") //"Y" or left on the buffalo
+     {
+      menuIndex=0;
+      showMenu(MOVIE_MENU);
+    }
+
 }
 
 function showMap()
 {
+	video.pause();
+	render=earthRender;
 }
 
-function gotoMenu(menu)
+function showMenu(menu)
 {
+	gamepadPressed = menuGamepadPressed;
+	render=menuRender;
+	update = menuUpdate;
+	video.pause();
+	
 	if(menu && typeof(menu)!=='undefined' && menu!==menuState)
 	{
 		menuState=menu;
@@ -189,13 +270,31 @@ function gotoMenu(menu)
         menuImageContext.textAlign = 'center';
 		menuImageContext.fillText(menuState[i].name, menuCanvas.width/2,120*(i+1));
 	}
+	movieMaterial.map=menuTexture;
 	menuTexture.needsUpdate=true;
+}
+
+
+function showVideo( videoURL )
+{
+	gamepadPressed = videoGamepadPressed;
+	video.pause();
+	render=videoRender;
+	update = videoUpdate;
+	movieMaterial.map=videoTexture;
+	
+	video.src = videoURL || "videos/sintel.ogv";
+	video.crossOrigin = "Anonymous"
+	video.load(); // must call after setting/changing source
+	video.onended=function(e){video.onended=function(e2){};showMenu(BASE_MENU);};
+	video.play();
 }
 
 // FUNCTIONS 		
 function init() 
 {
 	initVR();
+	updateFlightLoc();
 	initControls();
 	// SCENE
 	scene = new THREE.Scene();
@@ -212,6 +311,8 @@ function init()
 		renderer = new THREE.WebGLRenderer( {antialias:true} );
 	else
 		renderer = new THREE.CanvasRenderer(); 
+	
+	renderer.shadowMapEnabled	= true;
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	
 	//Now the rift effect
@@ -256,22 +357,22 @@ function init()
 	
 	    var materials = [
        new THREE.MeshLambertMaterial({
-           map: THREE.ImageUtils.loadTexture('/images/px.jpg'), side:THREE.DoubleSide 
+           map: THREE.ImageUtils.loadTexture('images/px.jpg'), side:THREE.DoubleSide 
        }),
        new THREE.MeshLambertMaterial({
-           map: THREE.ImageUtils.loadTexture('/images/py.jpg'), side:THREE.DoubleSide 
+           map: THREE.ImageUtils.loadTexture('images/py.jpg'), side:THREE.DoubleSide 
        }),
        new THREE.MeshLambertMaterial({
-           map: THREE.ImageUtils.loadTexture('/images/pz.jpg'), side:THREE.DoubleSide 
+           map: THREE.ImageUtils.loadTexture('images/pz.jpg'), side:THREE.DoubleSide 
        }),
        new THREE.MeshLambertMaterial({
-           map: THREE.ImageUtils.loadTexture('/images/px.jpg'), side:THREE.DoubleSide 
+           map: THREE.ImageUtils.loadTexture('images/px.jpg'), side:THREE.DoubleSide 
        }),
        new THREE.MeshLambertMaterial({
-           map: THREE.ImageUtils.loadTexture('/images/py.jpg'), side:THREE.DoubleSide 
+           map: THREE.ImageUtils.loadTexture('images/py.jpg'), side:THREE.DoubleSide 
        }),
        new THREE.MeshLambertMaterial({
-           map: THREE.ImageUtils.loadTexture('/images/pz.jpg'), side:THREE.DoubleSide 
+           map: THREE.ImageUtils.loadTexture('images/pz.jpg'), side:THREE.DoubleSide 
        }),
     ];
 	var skyBoxMaterial = new THREE.MeshFaceMaterial( materials ) 
@@ -300,8 +401,8 @@ function init()
 	// video = document.getElementById( 'myVideo' );
 	
 	videoImage = document.createElement( 'canvas' );
-	videoImage.width = 480;
-	videoImage.height = 204;
+	videoImage.width = 1920/2; //480;
+	videoImage.height = 1080/2; //204;
 
 	videoImageContext = videoImage.getContext( '2d' );
 	// background color if no video present
@@ -324,10 +425,13 @@ function init()
 	
 	menuImageContext = menuCanvas.getContext( '2d' );
 	// background color if no video present
-	gotoMenu(BASE_MENU);
+	//showMenu(BASE_MENU);
+	//showVideo("http://www.corsproxy.com/ia311503.us.archive.org/3/items/Route_66_-_an_American_badDream/Route_66_-_an_American_badDream.ogv");
+	//showVideo("http://ia311503.us.archive.org/3/items/Route_66_-_an_American_badDream/Route_66_-_an_American_badDream.ogv");
+	showMenu();
 	menuTexture.needsUpdate=true;
 
-	var movieMaterial = new THREE.MeshBasicMaterial( { map: menuTexture, overdraw: true, side:THREE.DoubleSide } );
+//	movieMaterial = new THREE.MeshBasicMaterial( { map: menuTexture, overdraw: true, side:THREE.DoubleSide } );
 	// the geometry on which the movie will be displayed;
 	// 		movie image will be scaled to fit these dimensions.
 	var movieGeometry = new THREE.PlaneGeometry(1920/2, 1080/2, 4, 4 );
@@ -338,16 +442,20 @@ function init()
 	camera.position.set(0,1080/4,300);
 	camera.lookAt(movieScreen.position);
 				
+	//INIT EARTH
+	initEarth();
 	
 }
 
-function setUpVideo()
-{
-	movieMaterial.map=videoTexture;
-	
-	video.src = "videos/sintel.ogv";
-	video.load(); // must call after setting/changing source
-	video.play();
+function earthRender(nowMsec){
+		// measure time
+		lastTimeMsec	= lastTimeMsec || nowMsec-1000/60
+		var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec)
+		lastTimeMsec	= nowMsec
+		// call each update function
+		onEarthRenderFcts.forEach(function(onRenderFct){
+			onRenderFct(deltaMsec/1000, nowMsec/1000)
+		})
 }
 
 function setUpMenu()
@@ -377,11 +485,11 @@ function videoUpdate()
 	//stats.update();
 }
 
-function videoRender() 
+function videoRender(curTime) 
 {	
 	if ( video.readyState === video.HAVE_ENOUGH_DATA ) 
 	{
-		videoImageContext.drawImage( video, 0, 0 );
+		videoImageContext.drawImage( video, 0, 0, videoImage.width, videoImage.height );
 		if ( videoTexture ) 
 			videoTexture.needsUpdate = true;
 	}
@@ -390,13 +498,17 @@ function videoRender()
 	riftEffect.render( scene, camera );
 };
 
-function menuRender()
+function menuUpdate()
+{
+}
+
+function menuRender(curTime)
 {
 				menuTexture.needsUpdate = true;
 	riftEffect.render( scene, camera );
 };
 
-function animate() 
+function animate( curTime ) 
 {
     requestAnimationFrame( animate );
   if (VRState !== null) {
@@ -416,7 +528,7 @@ function animate()
 
   // Update camera rotation
   camera.quaternion.multiplyQuaternions(BaseRotation, HMDRotation);
-	render();		
+	render(curTime);		
 	update();
 }
 
@@ -533,7 +645,7 @@ function initControls() {
   gamepad.bind(Gamepad.Event.CONNECTED, function(device) {
     console.log("Gamepad CONNECTED")
   });
-
+/*
   gamepad.bind(Gamepad.Event.BUTTON_DOWN, function(e) {
     if (e.control == "DISABLED_FACE_2") {
       $('.ui').toggle(200);
@@ -548,6 +660,11 @@ function initControls() {
     if (gamepads[0].state["DISABLED_FACE_1"] === 1) {
       moveToNextPlace();
     }
+  });*/
+  
+  
+  gamepad.bind(Gamepad.Event.BUTTON_UP, function(e) {
+    gamepadPressed(e);
   });
 
   gamepad.bind(Gamepad.Event.AXIS_CHANGED, function(e) {
@@ -570,6 +687,175 @@ function initControls() {
   }
 }
 
+
+function initEarth()
+{
+
+	
+	earthCanvas = document.createElement( 'canvas' );
+	earthCanvas.width = 2048; //4096;
+	earthCanvas.height = 2048; //1914;
+
+	earthContext = earthCanvas.getContext( '2d' );
+	// background color if no video present
+	earthContext.fillStyle = '#0000ff';
+	earthContext.fillRect( 0, 0, earthCanvas.width, earthCanvas.height );
+
+	earthTexture = new THREE.Texture( earthCanvas );
+	earthTexture.minFilter = THREE.LinearFilter;
+	earthTexture.magFilter = THREE.LinearFilter;
+		earthImageSource = document.createElement( 'img' );
+	earthImageSource.src='images/2_no_clouds_4k.jpg';
+	earthImageSource.onload = drawEarthFlat;
+
+	earthMaterial=new THREE.MeshPhongMaterial({
+    map: earthTexture,
+    bumpMap: THREE.ImageUtils.loadTexture('images/elev_bump_4k.jpg'),
+    bumpScale:   0.005,
+    specularMap: THREE.ImageUtils.loadTexture('images/water_4k.png'),
+    specular: new THREE.Color('grey')      });
+ earthSphere = new THREE.Mesh(
+  new THREE.SphereGeometry(200, 32, 32),
+  earthMaterial);
+  
+
+  earthSphere.geometry.dynamic = true;
+  earthSphere.useQuaternion = true;
+earthSphere.position.y=camera.position.y;
+earthScene.add(new THREE.AmbientLight(0x333333));
+	earthSphere.rotateX(30 * Math.PI/180) //30
+	earthSphere.rotateZ(0 * Math.PI/180)
+	earthSphere.rotateY(15 * Math.PI/180) //15
+	earthScene.add(earthSphere);
+
+var light = new THREE.DirectionalLight(0xffffff, 1);
+	light.position = camera.position;
+	earthScene.add(light);
+	earthScene.add(camera);
+      
+	onEarthRenderFcts.push(function(){
+		riftEffect.render( earthScene, camera );
+	})
+}
+
+function drawEarthFlat(){
+	earthContext.drawImage(earthImageSource,0,0,earthCanvas.width, earthCanvas.height);
+	if(PLANE_LAT && PLANE_LONG)
+	{
+		console.log(PLANE_LAT, PLANE_LONG);
+	var centerX = (PLANE_LONG+180)/360.0*2048.0;
+      var centerY = (90-PLANE_LAT)/180.0*2048.0;
+      var radius = 5;
+
+      earthContext.beginPath();
+      earthContext.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+      earthContext.fillStyle = 'red';
+      earthContext.fill();
+      earthContext.lineWidth = 5;
+      earthContext.strokeStyle = '#FF0000';
+      earthContext.stroke();
+      console.log(centerX, centerY, radius);
+	}
+    	earthTexture.needsUpdate=true;
+}
+
+function initEarthComplex()
+{
+	
+	earthScene.add( earthLight )
+
+	earthLight.position.set(0,1080/4,300);//(0,1500,4000);
+	earthScene.add( earthLight )
+	earthLight.castShadow	= true;
+	earthLight.shadowCameraNear	= 0.01
+	earthLight.shadowCameraFar	= 1500
+	earthLight.shadowCameraFov	= 45
+
+	earthLight.shadowCameraLeft	= -1
+	earthLight.shadowCameraRight	=  1
+	earthLight.shadowCameraTop	=  1
+	earthLight.shadowCameraBottom= -1
+	// earthLight.shadowCameraVisible	= true
+
+	earthLight.shadowBias	= 0.001
+	earthLight.shadowDarkness	= 0.2
+
+	earthLight.shadowMapWidth	= 1024
+	earthLight.shadowMapHeight	= 1024
+	
+	//////////////////////////////////////////////////////////////////////////////////
+	//		added starfield							//
+	//////////////////////////////////////////////////////////////////////////////////
+	
+	var starSphere	= THREEx.Planets.createStarfield()
+	earthScene.add(starSphere)
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		add an object and make it move					//
+	//////////////////////////////////////////////////////////////////////////////////
+
+	// var datGUI	= new dat.GUI()
+
+	containerEarth.rotateZ(-23.4 * Math.PI/180)
+	containerEarth.position.z	= 0
+	earthScene.add(containerEarth)
+	var moonMesh	= THREEx.Planets.createMoon()
+	moonMesh.position.set(0.5,0.5,0.5)
+	moonMesh.scale.multiplyScalar(1/5)
+	moonMesh.receiveShadow	= true
+	moonMesh.castShadow	= true
+	containerEarth.add(moonMesh)
+
+	earthMesh.receiveShadow	= true
+	earthMesh.castShadow	= true
+	containerEarth.add(earthMesh)
+	onEarthRenderFcts.push(function(delta, now){
+		earthMesh.rotation.y += 1/32 * delta;		
+	})
+
+	var geometry	= new THREE.SphereGeometry(250, 32, 32)
+	var material	= THREEx.createAtmosphereMaterial()
+	material.uniforms.glowColor.value.set(0x00b3ff)
+	material.uniforms.coeficient.value	= 0.8
+	material.uniforms.power.value		= 2.0
+	var mesh	= new THREE.Mesh(geometry, material );
+	mesh.scale.multiplyScalar(1.01);
+	//containerEarth.add( mesh );
+	// new THREEx.addAtmosphereMaterial2DatGui(material, datGUI)
+
+	var geometry	= new THREE.SphereGeometry(250, 32, 32)
+	var material	= THREEx.createAtmosphereMaterial()
+	material.side	= THREE.BackSide
+	material.uniforms.glowColor.value.set(0x00b3ff)
+	material.uniforms.coeficient.value	= 0.5
+	material.uniforms.power.value		= 4.0
+	var mesh	= new THREE.Mesh(geometry, material );
+	mesh.scale.multiplyScalar(1.15);
+	//containerEarth.add( mesh );
+	// new THREEx.addAtmosphereMaterial2DatGui(material, datGUI)
+
+	var earthCloud	= THREEx.Planets.createEarthCloud()
+	earthCloud.receiveShadow	= true
+	earthCloud.castShadow	= true
+	//containerEarth.add(earthCloud)
+	onEarthRenderFcts.push(function(delta, now){
+		//earthCloud.rotation.y += 1/8 * delta;		
+	})
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Camera Controls							//
+	//////////////////////////////////////////////////////////////////////////////////
+	var mouse	= {x : 0, y : 0}
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		render the earthScene						//
+	//////////////////////////////////////////////////////////////////////////////////
+	onEarthRenderFcts.push(function(){
+		riftEffect.render( earthScene, camera );		
+	})
+}
+	
 function initVR() {
   vr.load(function(error) {
     if (error) {
