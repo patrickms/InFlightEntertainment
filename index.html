@@ -34,7 +34,7 @@
 
 <!--Oculus Rift Support-->
 
-<script src="js/OculusRiftEffect.js"></script>
+<script src="js/GlyphOrRiftEffect.js"></script>
 <script src="js/vr.js"></script>
 <script src="js/gamepad.js"></script>
 
@@ -82,6 +82,13 @@ var gamepadPressed = menuGamepadPressed;
 
 var menuDiv, menuCanvas, menuImageContext, menuTexture;
 
+var USE_TRACKER=true;
+
+//WEBM
+//var KALTURA_TEST_URL = 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_c0r624gh/flavorId/0_2mn33cly/format/url/protocol/http/a.webm';
+//iPad
+var KALTURA_TEST_URL = 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_c0r624gh/flavorId/0_w48dtkyq/format/url/protocol/http/a.mp4';
+
 var menuIndex=0;
 var BASE_MENU=[{name:'Movies', action:function(){showMenu(MOVIE_MENU);}},
 				{name:'Flight Map', action:showMap},
@@ -89,6 +96,7 @@ var BASE_MENU=[{name:'Movies', action:function(){showMenu(MOVIE_MENU);}},
 var menuState = BASE_MENU;
 var MOVIE_MENU=[{name:'Sintel', action:function(){showVideo("videos/sintel.ogv");}},
 				{name:'Big Buck Bunny', action:function(){showVideo("videos/Big_Buck_Bunny_small.ogv");}},
+				{name:'Kaltura', action:function(){showVideo(KALTURA_TEST_URL);}},
 				{name:'Back...', action:function(){showMenu(BASE_MENU);}}];
 var GAMES_MENU=[]; 
 
@@ -122,7 +130,9 @@ var keyboardMoveVector = new THREE.Vector3();
 var gamepadMoveVector = new THREE.Vector3();
 var HMDRotation = new THREE.Quaternion();
 var BaseRotation = new THREE.Quaternion();
-var BaseRotationEuler = new THREE.Vector3();
+var BaseRotationEuler = new THREE.Euler(0,0,0, 'YZX' );
+
+var gamepad;
 
 var VRState = null;
 
@@ -288,6 +298,7 @@ function showVideo( videoURL )
 	video.load(); // must call after setting/changing source
 	video.onended=function(e){video.onended=function(e2){};showMenu(BASE_MENU);};
 	video.play();
+	console.log('Playing', video.src);
 }
 
 // FUNCTIONS 		
@@ -592,7 +603,7 @@ function initControls() {
   });
 
   $(document).keyup(function(e) {
-    switch(e.keyCode) {
+  	switch(e.keyCode) {
       case 37:
       case 39:
         keyboardMoveVector.y = 0.0;
@@ -601,6 +612,22 @@ function initControls() {
       case 40:
         keyboardMoveVector.x = 0.0;
         break;
+     case 73:
+     	if(gamepad)
+		    gamepad._fire(Gamepad.Event.BUTTON_UP, Object.create({'control':"FACE_3"}));
+		break;
+     case 74:
+     	if(gamepad)
+		    gamepad._fire(Gamepad.Event.BUTTON_UP, Object.create({'control':"FACE_4"}));
+		break;
+     case 75:
+     	if(gamepad)
+		    gamepad._fire(Gamepad.Event.BUTTON_UP, Object.create({'control':"FACE_2"}));
+		break;
+     case 76:
+     	if(gamepad)
+		    gamepad._fire(Gamepad.Event.BUTTON_UP, Object.create({'control':"FACE_1"}));
+		break;
     }
   });
 
@@ -617,25 +644,83 @@ function initControls() {
 
   viewer.mousedown(function(event) {
     mouseButtonDown = true;
-    lastClientX = event.clientX;
-    lastClientY = event.clientY;
+    lastClientX = event.originalEvent.movementX || event.originalEvent.mozMovementX || event.originalEvent.webkitMovementX || event.clientX;
+    lastClientY = event.originalEvent.movementY || event.originalEvent.mozMovementY || event.originalEvent.webkitMovementY || event.clientY;
+      
   });
+document.body.onclick = function() {
+//	THREEx.FullScreen.request();
+	var elem=renderer.domElement;
+	
+       if (elem.requestFullscreen) {
+  elem.requestFullscreen();
+} else if (elem.msRequestFullscreen) {
+  elem.msRequestFullscreen();
+} else if (elem.mozRequestFullScreen) {
+  elem.mozRequestFullScreen();
+} else if (elem.webkitRequestFullscreen) {
+  elem.webkitRequestFullscreen();
+}
+        
+	    renderer.domElement.requestPointerLock = renderer.domElement.requestPointerLock ||
+                            renderer.domElement.mozRequestPointerLock ||
+                            renderer.domElement.webkitRequestPointerLock;
+
+		renderer.domElement.requestPointerLock()
+}
 
   viewer.mouseup(function() {
     mouseButtonDown = false;
   });
+  
+  function fullScreenChangeHandler( event ) {
+
+	//alert("fullscreenchange");
+	//console.log(event);
+    // The event object doesn't carry information about the fullscreen state of the browser,
+    // but it is possible to retrieve it through the fullscreen API
+    if ( document.fullscreenEnabled || document.msFullscreenEnabled || document.msFullscreenEnabled || document.webkitFullscreenEnabled) {
+        
+	//console.log(event);
+        // The target of the event is always the document,
+        // but it is possible to retrieve the fullscreen element through the API
+        //document.fullscreenElement;
+    }
+
+}
+  document.addEventListener("fullscreenchange",fullScreenChangeHandler );
+  document.addEventListener("msfullscreenchange",fullScreenChangeHandler );
+  document.addEventListener("mozfullscreenchange",fullScreenChangeHandler );
+  document.addEventListener("webkitfullscreenchange",fullScreenChangeHandler );
+
 
   viewer.mousemove(function(event) {
-    if (mouseButtonDown) {
-      var enableX = (USE_TRACKER || VRState !== null) ? 0 : 1;
+  	if(document.pointerLockElement || document.mozPointerLockElement || document.msPointerLockElement || document.webkitPointerLockElement)
+  	{
+      deltaX = event.originalEvent.movementX || event.originalEvent.mozMovementX || event.originalEvent.webkitMovementX || 0;
+      deltaY = event.originalEvent.movementY || event.originalEvent.mozMovementY || event.originalEvent.webkitMovementY || 0;
+      
       BaseRotationEuler.set(
-        angleRangeRad(BaseRotationEuler.x + (event.clientY - lastClientY) * MOUSE_SPEED * enableX),
-        angleRangeRad(BaseRotationEuler.y + (event.clientX - lastClientX) * MOUSE_SPEED),
-        0.0
+        angleRangeRad(BaseRotationEuler.x + deltaY * MOUSE_SPEED),
+        angleRangeRad(BaseRotationEuler.y + deltaX * MOUSE_SPEED),
+        0.0,
+        'YZX'
       );
-      lastClientX = event.clientX;
-      lastClientY = event.clientY;
-      BaseRotation.setFromEuler(BaseRotationEuler, 'YZX');
+      BaseRotation.setFromEuler(BaseRotationEuler );
+  	}
+    else if (mouseButtonDown) {
+      var enableX = (USE_TRACKER || VRState !== null) ? 0 : 1;
+      clientX = event.clientX;
+      clientY = event.clientY;
+      BaseRotationEuler.set(
+        angleRangeRad(BaseRotationEuler.x + (clientY - lastClientY) * MOUSE_SPEED * enableX),
+        angleRangeRad(BaseRotationEuler.y + (clientX - lastClientX) * MOUSE_SPEED),
+        0.0,
+        'YZX'
+      );
+      lastClientX = clientX;
+      lastClientY = clientY;
+      BaseRotation.setFromEuler(BaseRotationEuler );
     }
   });
 
