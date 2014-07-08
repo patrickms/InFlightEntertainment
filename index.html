@@ -308,6 +308,35 @@ function showVideo( videoURL )
 
 function articleUpdate()
 {
+	var word=articleTokens[articleTokenIndex];
+	var length = word.length;
+
+	var bestLetter = 1;
+	switch (length) {
+		case 1:
+		    bestLetter = 1; // first
+		    break;
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		    bestLetter = 2; // second
+		    break;
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+		    bestLetter = 3; // third
+		    break;
+		case 10:
+		case 11:
+		case 12:
+		case 13:
+		    bestLetter = 4; // fourth
+		    break;
+		default:
+		    bestLetter = 5; // fifth
+	};
 	menuImageContext.fillStyle = '#ffffff';
 	menuImageContext.fillRect( 0, 0, menuCanvas.width, menuCanvas.height );
 
@@ -318,7 +347,7 @@ function articleUpdate()
 	if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
 	else menuImageContext.font="120px Georgia";
 	menuImageContext.textAlign = 'center';
-	menuImageContext.fillText(articleTokens[articleTokenIndex], menuCanvas.width/2,(menuCanvas.height-120.0)/2.0+120.0);
+	menuImageContext.fillText(word, menuCanvas.width/2,(menuCanvas.height-120.0)/2.0+120.0);
 }
 
 function articleRender(curTime)
