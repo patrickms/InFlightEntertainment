@@ -314,14 +314,11 @@ function articleUpdate()
 	//menuTexture.minFilter = THREE.LinearFilter;
 	//menuTexture.magFilter = THREE.LinearFilter;
 	//	menuImageContext.drawImage(,0,0);
-	for(i=0; i<menuState.length; i++)
-	{
-		menuImageContext.fillStyle = '#000000';
-		if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
-		else menuImageContext.font="120px Georgia";
-        	menuImageContext.textAlign = 'center';
-		menuImageContext.fillText(menuState[i].name, menuCanvas.width/2,(menuCanvas.height-120.0*menuState.length)/2.0+120*(i+1));
-	}
+	menuImageContext.fillStyle = '#000000';
+	if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
+	else menuImageContext.font="120px Georgia";
+	menuImageContext.textAlign = 'center';
+	menuImageContext.fillText(articleTokens[articleTokenIndex], menuCanvas.width/2,(menuCanvas.height-120.0*menuState.length)/2.0+120*(i+1));
 }
 
 function articleRender(curTime)
