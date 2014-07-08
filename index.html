@@ -318,7 +318,7 @@ function articleUpdate()
 	if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
 	else menuImageContext.font="120px Georgia";
 	menuImageContext.textAlign = 'center';
-	menuImageContext.fillText(articleTokens[articleTokenIndex], menuCanvas.width/2,(menuCanvas.height-120.0*menuState.length)/2.0+120*(i+1));
+	menuImageContext.fillText(articleTokens[articleTokenIndex], menuCanvas.width/2,(menuCanvas.height-120.0)/2.0+120.0);
 }
 
 function articleRender(curTime)
