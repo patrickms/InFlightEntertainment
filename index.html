@@ -92,14 +92,15 @@ var KALTURA_TEST_URL = 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playMan
 var menuIndex=0;
 var BASE_MENU=[{name:'Movies', action:function(){showMenu(MOVIE_MENU);}},
 				{name:'Flight Map', action:showMap},
-				{name:'Games', action:function(){showMenu(GAMES_MENU);}}];
+				{name:'Articles', action:function(){showMenu(ARTICLE_MENU);}}];
 var menuState = BASE_MENU;
 var MOVIE_MENU=[{name:'Sintel', action:function(){showVideo("videos/sintel.ogv");}},
 				{name:'Big Buck Bunny', action:function(){showVideo("videos/Big_Buck_Bunny_small.ogv");}},
 				{name:'Kaltura', action:function(){showVideo(KALTURA_TEST_URL);}},
 				{name:'Back...', action:function(){showMenu(BASE_MENU);}}];
-var GAMES_MENU=[]; 
 
+var ARTICLE_MENU=[{name:'Example Article', action:function(){showArticle();}}
+			];
 
 var MOUSE_SPEED = 0.005;
 var KEYBOARD_SPEED = 0.02;
@@ -135,6 +136,8 @@ var BaseRotationEuler = new THREE.Euler(0,0,0, 'YZX' );
 var gamepad;
 
 var VRState = null;
+	var articleTokens=articleText.split(/[\s\n]+/);
+	var articleTokenIndex=0;
 
 //EARTH
 
@@ -282,6 +285,7 @@ function showMenu(menu)
 	}
 	movieMaterial.map=menuTexture;
 	menuTexture.needsUpdate=true;
+	
 }
 
 
@@ -299,6 +303,56 @@ function showVideo( videoURL )
 	video.onended=function(e){video.onended=function(e2){};showMenu(BASE_MENU);};
 	video.play();
 	console.log('Playing', video.src);
+}
+
+
+function articleUpdate()
+{
+	menuImageContext.fillStyle = '#ffffff';
+	menuImageContext.fillRect( 0, 0, menuCanvas.width, menuCanvas.height );
+
+	//menuTexture.minFilter = THREE.LinearFilter;
+	//menuTexture.magFilter = THREE.LinearFilter;
+	//	menuImageContext.drawImage(,0,0);
+	for(i=0; i<menuState.length; i++)
+	{
+		menuImageContext.fillStyle = '#000000';
+		if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
+		else menuImageContext.font="120px Georgia";
+        	menuImageContext.textAlign = 'center';
+		menuImageContext.fillText(menuState[i].name, menuCanvas.width/2,(menuCanvas.height-120.0*menuState.length)/2.0+120*(i+1));
+	}
+}
+
+function articleRender(curTime)
+{
+				menuTexture.needsUpdate = true;
+	riftEffect.render( scene, camera );
+};
+
+function showArticle(  )
+{
+	var articleText=["In Xanadu did Kubla Khan",
+				"A stately pleasure-dome decree:",
+				"Where Alph, the sacred river, ran",
+				"Through caverns measureless to man",
+				"Down to a sunless sea.",
+				"So twice five miles of fertile ground",
+				"With walls and towers were girdled round;",
+				"And there were gardens bright with sinuous rills,",
+				"Where blossomed many an incense-bearing tree;",
+				"And here were forests ancient as the hills,",
+				"Enfolding sunny spots of greenery."].join('\n')
+	articleTokens=articleText.split(/[\s\n]+/);
+	articleTokenIndex=0;
+	
+	gamepadPressed = videoGamepadPressed;
+	video.pause();
+	render=articleRender;
+	update = articleUpdate;
+	
+	movieMaterial.map=menuTexture;
+	menuTexture.needsUpdate=true;
 }
 
 // FUNCTIONS 		
