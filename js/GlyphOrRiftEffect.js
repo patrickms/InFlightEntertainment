@@ -9,19 +9,18 @@
 THREE.OculusRiftEffect = function ( renderer, options ) {
 	// worldFactor indicates how many units is 1 meter
 	var worldFactor = (options && options.worldFactor) ? options.worldFactor: 1.0;
-	var glyphMode = true;
-	var useRiftDistortion = (options && options.useRiftDistortion) ? options.useRiftDistortion : (!glyphMode);
+	var useRiftDistortion = (options && options.useRiftDistortion) ? options.useRiftDistortion : false;
 
 	// Specific HMD parameters
 	var HMD = (options && options.HMD) ? options.HMD: {
 		// Parameters from the Oculus Rift DK1
 		hResolution: 1280,
 		vResolution: 800,
-		hScreenSize: 0.14976, //39 degree fov 3/4 overlap
-		vScreenSize: 0.0936, //35 degrees 16*
+		hScreenSize: 0.14976,
+		vScreenSize: 0.0936,
 		interpupillaryDistance: 0.064,
 		lensSeparationDistance: 0.064,
-		eyeToScreenDistance: 0.041, 
+		eyeToScreenDistance: 0.041,
 		distortionK : [1.0, 0.22, 0.24, 0.0],
 		chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
 	};
@@ -114,8 +113,6 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 		HMD = v;
 		// Compute aspect ratio and FOV
 		var aspect = HMD.hResolution / (2*HMD.vResolution);
-		if(glyphMode)
-			aspect=16.0/9.0;
 
 		// Fov is normally computed with:
 		//   THREE.Math.radToDeg( 2*Math.atan2(HMD.vScreenSize,2*HMD.eyeToScreenDistance) );
@@ -123,8 +120,6 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 		var r = -1.0 - (4 * (HMD.hScreenSize/4 - HMD.lensSeparationDistance/2) / HMD.hScreenSize);
 		distScale = (HMD.distortionK[0] + HMD.distortionK[1] * Math.pow(r,2) + HMD.distortionK[2] * Math.pow(r,4) + HMD.distortionK[3] * Math.pow(r,6));
 		var fov = THREE.Math.radToDeg(2*Math.atan2(HMD.vScreenSize*distScale, 2*HMD.eyeToScreenDistance));
-		if(glyphMode)
-			fov = 39;
 
 		// Compute camera projection matrices
 		var proj = (new THREE.Matrix4()).makePerspective( fov, aspect, 0.3, 10000 );
