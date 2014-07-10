@@ -339,15 +339,35 @@ function articleUpdate()
 	};
 	menuImageContext.fillStyle = '#ffffff';
 	menuImageContext.fillRect( 0, 0, menuCanvas.width, menuCanvas.height );
+	//if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
+	menuImageContext.font="120px Georgia";
+	menuImageContext.textAlign = 'center';
+	
+	menuImageContext.fillStyle = '#000000';
+	
+	var wordStart = word.slice(0,bestLetter-1);
+	var wordMiddle = word.slice(bestLetter-1, bestLetter);
+	var wordEnd = word.slice(bestLetter);
+	
+	
+	var wordStartMetrics = context.measureText(wordStart);
+	var wordMiddleMetrics = context.measureText(wordMiddle);
+	var wordEndMetrics = context.measureText(wordEnd);
+	
+	var widthStart = wordStartMetrics.width;
+	var widthMiddle = wordMiddleMetrics.width;
+	var widthEnd = wordEndMetrics.width;
+	
+	var wordMiddleX = menuCanvas.width/2;
+	var wordStartX = wordMiddleX - (widthStart + widthMiddle)/2.0;
+	var wordEndX = wordMiddleX + (widthMiddle + widthEnd)/2.0;
 
 	//menuTexture.minFilter = THREE.LinearFilter;
 	//menuTexture.magFilter = THREE.LinearFilter;
 	//	menuImageContext.drawImage(,0,0);
-	menuImageContext.fillStyle = '#000000';
-	if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
-	else menuImageContext.font="120px Georgia";
-	menuImageContext.textAlign = 'center';
-	menuImageContext.fillText(word, menuCanvas.width/2,(menuCanvas.height-120.0)/2.0+120.0);
+	menuImageContext.fillText(wordStart, wordStartX,(menuCanvas.height-120.0)/2.0+120.0);
+	menuImageContext.fillText(wordMiddle, wordMiddleX,(menuCanvas.height-120.0)/2.0+120.0);
+	menuImageContext.fillText(wordEnd, wordEndX,(menuCanvas.height-120.0)/2.0+120.0);
 }
 
 function articleRender(curTime)
