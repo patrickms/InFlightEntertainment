@@ -392,6 +392,8 @@ function showArticle(  )
 	articleTokens=articleText.split(/[\s\n]+/);
 	articleTokenIndex=0;
 	
+	setInterval( function(){ articleTokenIndex = (articleTokenIndex + 1)%articleTokens.length; }, 1000);
+	
 	gamepadPressed = videoGamepadPressed;
 	video.pause();
 	render=articleRender;
