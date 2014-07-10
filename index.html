@@ -350,9 +350,9 @@ function articleUpdate()
 	var wordEnd = word.slice(bestLetter);
 	
 	
-	var wordStartMetrics = context.measureText(wordStart);
-	var wordMiddleMetrics = context.measureText(wordMiddle);
-	var wordEndMetrics = context.measureText(wordEnd);
+	var wordStartMetrics = menuImageContext.measureText(wordStart);
+	var wordMiddleMetrics = menuImageContext.measureText(wordMiddle);
+	var wordEndMetrics = menuImageContext.measureText(wordEnd);
 	
 	var widthStart = wordStartMetrics.width;
 	var widthMiddle = wordMiddleMetrics.width;
