@@ -993,6 +993,10 @@ document.body.onclick = function() {
 
 function imageSourceLoad(){
 	drawEarthFlat();
+	if(!earthImageSource.complete){
+		console.log("reloading earth image");
+		earthImageSource.src='images/2_no_clouds_4k.jpg?' + Math.random();
+	}
 }
 
 function initEarth()
@@ -1050,7 +1054,7 @@ function drawEarthFlat(){
 	earthContext.drawImage(earthImageSource,0,0,earthCanvas.width, earthCanvas.height);
 	if(PLANE_LAT && PLANE_LONG)
 	{
-		console.log(PLANE_LAT, PLANE_LONG);
+		//console.log(PLANE_LAT, PLANE_LONG);
 	var centerX = (PLANE_LONG+180)/360.0*2048.0;
       var centerY = (90-PLANE_LAT)/180.0*2048.0;
       var radius = 3;
@@ -1062,7 +1066,7 @@ function drawEarthFlat(){
       earthContext.lineWidth = 3;
       earthContext.strokeStyle = '#FF0000';
       earthContext.stroke();
-      console.log(centerX, centerY, radius);
+      //console.log(centerX, centerY, radius);
 	} else { console.log("Missing plane location")};
     	earthTexture.needsUpdate=true;
 }
