@@ -452,7 +452,8 @@ function updateArticleTokenIndex()
 {
 	if(render==articleRender)
 	{
-		articleTokenIndex = (articleTokenIndex + 1)%articleTokens.length;
+		if(!articlePaused)
+			articleTokenIndex = (articleTokenIndex + 1)%articleTokens.length;
 		setTimeout( updateArticleTokenIndex, 60000.0/200.0);
 	}
 }
