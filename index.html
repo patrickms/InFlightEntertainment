@@ -454,8 +454,11 @@ function showArticle( articleName )
 	if(!articleText)
 		articleText=ARTICLE_TEXT[ 'default' ];
 	var artImgSrc=ARTICLE_IMAGES[ articleName ];
+	var articleImg=document.getElementById("articleimg");
 	if(artImgSrc)
+	{
 		articleImg.src=artImgSrc;
+	}
 	articleTokens=articleText.split(/[\s\n]+/);
 	articleTokenIndex=0;
 	
