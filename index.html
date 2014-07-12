@@ -550,6 +550,7 @@ function init()
 	
 	camera.position.set(0,1080/4,300);
 	camera.lookAt(movieScreen.position);
+	camera.updateMatrixWorld();
 	camera.updateProjectionMatrix();
 				
 	//INIT EARTH
@@ -642,6 +643,8 @@ function animate( curTime )
   // Update camera rotation
   camera.quaternion.multiplyQuaternions(BaseRotation, HMDRotation);
   camera.updateProjectionMatrix();
+  
+	camera.updateMatrixWorld();
 	render(curTime);		
 	update();
 }
