@@ -196,7 +196,7 @@ function requestAAWayArticles(callback)
 {
 	var oReq = new XMLHttpRequest();
 
-	oReq.onload = function(){console.log(this.response);callback(JSON.parse(this.response))};
+	oReq.onload = function(){callback(JSON.parse(this.response))};
 	oReq.open("get", "http://jsonp.jit.su/?url=http%3A%2F%2Fdev2.admin.aapubs.com%2Fapi%2FHUBREST.svc%2Farticles%3Fnear%3D-122.4167%2C37.7833%26num%3D5%26%26radiusKm%3D250", true);
 	oReq.send();
 
@@ -225,7 +225,7 @@ function handleAAWayArticleList(articleList)
 }
 function updateAAWayArticles()
 {
-	requestAAWayArticles(function(x){console.log(x) } );
+	requestAAWayArticles(function(x){console.log(x);handleAAWayArticleList(x) } );
 	console.log("requested AA Way articles")
 
 }
