@@ -418,7 +418,8 @@ function init()
 	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
 	scene.add(camera);
 	camera.position.set(0,150,400);
-	camera.lookAt(scene.position);	
+	camera.lookAt(scene.position);
+	camera.updateProjectionMatrix();
 	// RENDERER
 	if ( Detector.webgl )
 		renderer = new THREE.WebGLRenderer(  ); //{antialias:true}
@@ -555,6 +556,7 @@ function init()
 	
 	camera.position.set(0,1080/4,300);
 	camera.lookAt(movieScreen.position);
+	camera.updateProjectionMatrix();
 				
 	//INIT EARTH
 	initEarth();
@@ -645,6 +647,7 @@ function animate( curTime )
 
   // Update camera rotation
   camera.quaternion.multiplyQuaternions(BaseRotation, HMDRotation);
+  camera.updateProjectionMatrix();
 	render(curTime);		
 	update();
 }
