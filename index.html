@@ -418,7 +418,7 @@ function articleUpdate()
 	menuImageContext.font="90px Georgia";
 	menuImageContext.fillStyle = '#ff0000';
 	menuImageContext.fillText(wordMiddle, wordMiddleX,(menuCanvas.height-120.0)/2.0+120.0);
-	menuImageContext.fillStyle = '#ffffff';
+	menuImageContext.fillStyle = '#000000';
 	menuImageContext.font="90px Georgia";
 	menuImageContext.fillText(wordEnd, wordEndX,(menuCanvas.height-120.0)/2.0+120.0);
 }
@@ -437,7 +437,7 @@ function showArticle( articleName )
 	articleTokens=articleText.split(/[\s\n]+/);
 	articleTokenIndex=0;
 	
-	setInterval( function(){ articleTokenIndex = (articleTokenIndex + 1)%articleTokens.length; }, 1000);
+	setInterval( function(){ articleTokenIndex = (articleTokenIndex + 1)%articleTokens.length; }, 60000.0/200.0);
 	
 	gamepadPressed = videoGamepadPressed;
 	video.pause();
