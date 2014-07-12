@@ -228,6 +228,12 @@ function handleAAWayArticle(articleName,response)
 	importedDiv.innerHTML = htmlTXT;
 	var elements = importedDiv.getElementsByClassName('article-body');
 	ARTICLE_TEXT[articleName]=elements[0].innerText;
+	var imgs=importedDiv.getElementsByTagName('img');
+	if(imgs && imgs.length>0)
+	{
+		var bgimg=document.getElementById("articleimg");
+		bgimg.src=imgs[0].src;
+	}
 	importedDiv.innerHTML="";
 }
 
