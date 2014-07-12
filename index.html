@@ -205,7 +205,8 @@ function requestAAWayArticles(callback)
 function handleAAWayArticle(articleName,response)
 {
 	ARTICLE_TEXT[articleName]='Not loaded successfully'
-	var htmlTXT = response;
+	var htmlTXT = response.error;
+	alert(response.error);
 
 	var div = document.createElement('div');
 	div.innerHTML = htmlTXT;
