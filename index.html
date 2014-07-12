@@ -207,7 +207,7 @@ function handleAAWayArticle(articleName,response)
 	ARTICLE_TEXT[articleName]='Not loaded successfully'
 	var htmlTXT = response;
 
-	var div = window.content.document.createElement('div');
+	var div = document.createElement('div');
 	div.innerHTML = htmlTXT;
 	var elements = div.getElementsByTagName('article-body');
 	ARTICLE_TEXT[articleName]=elements[0].innerText;
