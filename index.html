@@ -209,6 +209,7 @@ function requestAAWayArticles(callback)
 	oReq.send();
 
 }
+var importedDiv;
 
 function handleAAWayArticle(articleName,response)
 {
@@ -219,9 +220,9 @@ function handleAAWayArticle(articleName,response)
 	alert(htmlTXT);
 	//alert(response.error);
 
-	var div = document.createElement('div');
-	div.innerHTML = htmlTXT;
-	var elements = div.getElementsByTagName('article-body');
+	importedDiv = document.createElement('div');
+	importedDiv.innerHTML = htmlTXT;
+	var elements = importedDiv.getElementsByTagName('article-body');
 	ARTICLE_TEXT[articleName]=elements[0].innerText;
 }
 
