@@ -263,7 +263,7 @@ var oReq = new XMLHttpRequest();
 
 oReq.onload = function(){callback(JSON.parse(this.response))};
 //http://airborne.gogoinflight.com/abp/ws/absServices/statusTray
-oReq.open("get", "http://jsonp.jit.su/?url=http%3A%2F%2Fairborne.gogoinflight.com%2Fabp%2Fws%2FabsServices%2FstatusTray", true);
+oReq.open("get", "http://airborne.gogoinflight.com/abp/ws/absServices/statusTray", true);
 //oReq.open("get", "http://jsonp.jit.su/?url=https%3A%2F%2Fapi.gogoair.com%2Fv1%2Ftest%2Faal%2Fstatustray%3Fapikey%3DLoB9jsKwwpye2HfdGp3ds7rbMGYuj6rA", true);
 //oReq.open("get","http://jsonp.jit.su/?url=http%3A%2F%2Fgogotomcat-masstroy.rhcloud.com%2Fstatustray",true);
 oReq.send();
