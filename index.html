@@ -232,8 +232,10 @@ function handleAAWayArticle(articleName,response)
 	if(imgs && imgs.length>0)
 	{
 		var bgimg=document.getElementById("articleimg");
-		bgimg.src=imgs[0].src;
-	}
+		bgimg.src=imgs[imgs.length/2].src;
+		console.log(articleName, " image src", bgimg.src);
+	} else
+		console.log(articleName, " no image src");
 	importedDiv.innerHTML="";
 }
 
