@@ -11,7 +11,7 @@
         * {
             height: 100%;
   margin: 0;
-  padding: 0;a
+  padding: 0;
   background: #000000;
   color: #000;
             overflow: hidden;
@@ -1040,13 +1040,13 @@ function drawEarthFlat(){
 		console.log(PLANE_LAT, PLANE_LONG);
 	var centerX = (PLANE_LONG+180)/360.0*2048.0;
       var centerY = (90-PLANE_LAT)/180.0*2048.0;
-      var radius = 5;
+      var radius = 10;
 
       earthContext.beginPath();
       earthContext.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
       earthContext.fillStyle = 'red';
       earthContext.fill();
-      earthContext.lineWidth = 5;
+      earthContext.lineWidth = 10;
       earthContext.strokeStyle = '#FF0000';
       earthContext.stroke();
       console.log(centerX, centerY, radius);
