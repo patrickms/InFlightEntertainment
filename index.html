@@ -57,13 +57,6 @@
 
 <!-- <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div> -->
 <script>
-/*
-	some of the code is from...
-	Three.js "tutorials by example"
-	Author: Lee Stemkoski
-	Date: July 2013 (three.js v59dev)
-*/
-	
 // MAIN
 
 // standard global variables
@@ -414,7 +407,8 @@ function init()
 	// CAMERA
 	
 	var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.001, FAR = 20000;
+	var VIEW_ANGLE = 45, ASPECT = 16.0/9.0;
+	var  NEAR = 0.001, FAR = 20000; //SCREEN_WIDTH / SCREEN_HEIGHT,
 	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
 	scene.add(camera);
 	camera.position.set(0,150,400);
