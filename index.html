@@ -621,7 +621,8 @@ function menuUpdate()
 function menuRender(curTime)
 {
 				menuTexture.needsUpdate = true;
-	renderer.render( scene, camera );
+	//renderer.render( scene, camera );
+	riftEffect.render( scene, camera );
 };
 
 function animate( curTime ) 
