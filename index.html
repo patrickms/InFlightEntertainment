@@ -1050,7 +1050,7 @@ function drawEarthFlat(){
       earthContext.strokeStyle = '#FF0000';
       earthContext.stroke();
       console.log(centerX, centerY, radius);
-	}
+	} else { console.log("Missing plane location")};
     	earthTexture.needsUpdate=true;
 }
 
