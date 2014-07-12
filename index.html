@@ -229,9 +229,9 @@ function handleAAWayArticle(articleName,response)
 	var elements = importedDiv.getElementsByClassName('article-body');
 	ARTICLE_TEXT[articleName]=elements[0].innerText;
 	var imgs=importedDiv.getElementsByTagName('img');
+	var bgimg=document.getElementById("articleimg");
 	if(imgs && imgs.length>0)
 	{
-		var bgimg=document.getElementById("articleimg");
 		bgimg.src=imgs[imgs.length/2].src;
 		console.log(articleName, " image src", bgimg.src);
 	} else
