@@ -93,7 +93,19 @@ var MOVIE_MENU=[{name:'Sintel', action:function(){showVideo("videos/sintel.ogv")
 				{name:'Back...', action:function(){showMenu(BASE_MENU);}}];
 
 var ARTICLE_MENU=[{name:'Example Article', action:function(){showArticle();}}
-			];
+
+var ARTICLE_TEXT={'default': ["In Xanadu did Kubla Khan",
+				"A stately pleasure-dome decree:",
+				"Where Alph, the sacred river, ran",
+				"Through caverns measureless to man",
+				"Down to a sunless sea.",
+				"So twice five miles of fertile ground",
+				"With walls and towers were girdled round;",
+				"And there were gardens bright with sinuous rills,",
+				"Where blossomed many an incense-bearing tree;",
+				"And here were forests ancient as the hills,",
+				"Enfolding sunny spots of greenery."].join('\n')
+			};
 
 var MOUSE_SPEED = 0.005;
 var KEYBOARD_SPEED = 0.02;
@@ -190,6 +202,27 @@ function requestAAWayArticles(callback)
 
 }
 
+function handleAAWayArticle(response)
+{
+	
+}
+
+function handleAAWayArticleList(articleList)
+{
+	ARTICLE_MENU=[];
+	for(var i=0; i<articleList.length; i++)
+	{
+		var article=articleList[i];
+		ARTICLE_MENU.push({name:article.Title, action:function(){showArticle(article.Title);});
+		
+		var oReq = new XMLHttpRequest();
+		var articleUrl=encodeURIComponent(article.Url);
+		oReq.onload = function(){console.log(this.response);handleAAWayArticle(article.Title,this.response)};
+		oReq.open("get", "http://jsonp.jit.su/?url="+articleUrl, true);
+		oReq.send();
+	}
+	
+}
 function updateAAWayArticles()
 {
 	requestAAWayArticles(function(x){console.log(x) } );
@@ -370,19 +403,11 @@ function articleRender(curTime)
 	renderer.render( scene, camera );
 };
 
-function showArticle(  )
+function showArticle( articleName )
 {
-	var articleText=["In Xanadu did Kubla Khan",
-				"A stately pleasure-dome decree:",
-				"Where Alph, the sacred river, ran",
-				"Through caverns measureless to man",
-				"Down to a sunless sea.",
-				"So twice five miles of fertile ground",
-				"With walls and towers were girdled round;",
-				"And there were gardens bright with sinuous rills,",
-				"Where blossomed many an incense-bearing tree;",
-				"And here were forests ancient as the hills,",
-				"Enfolding sunny spots of greenery."].join('\n')
+	var articleText=ARTICLE_TEXT[ articleName ];
+	if(!articleText)
+		articleText=ARTICLE_TEXT[ 'default' ];
 	articleTokens=articleText.split(/[\s\n]+/);
 	articleTokenIndex=0;
 	
