@@ -332,6 +332,10 @@ function articleUpdate()
 	};
 	menuImageContext.fillStyle = '#ffffff';
 	menuImageContext.fillRect( 0, 0, menuCanvas.width, menuCanvas.height );
+	var bgimg=document.getElementById("bgimg");
+	menuImageContext.drawImage(bgimg,0,0,menuCanvas.width,menuCanvas.height)
+	var aalogo=document.getElementById("aalogo");
+	menuImageContext.drawImage(aalogo,0,0,menuCanvas.width/2.0,menuCanvas.height/2.0)
 	//if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
 	menuImageContext.font="120px Georgia";
 	menuImageContext.textAlign = 'center';
@@ -1077,5 +1081,7 @@ animate();
 </head>
 <body>
 <div id="viewer"></div>
+<img id="aalogo" src="images/new-american-logo-1024x707.jpg" style="display: none"></img>
+<img id="bgimg" src="images/unnamed.jpg" style="display: none"></img>
 </body>
 </html>
