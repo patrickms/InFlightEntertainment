@@ -983,6 +983,9 @@ document.body.onclick = function() {
   }
 }
 
+function imageSourceLoad(){
+	drawEarthFlat();
+}
 
 function initEarth()
 {
@@ -1002,7 +1005,7 @@ function initEarth()
 	earthTexture.magFilter = THREE.LinearFilter;
 		earthImageSource = document.createElement( 'img' );
 	earthImageSource.src='images/2_no_clouds_4k.jpg';
-	earthImageSource.onload = funcion(){drawEarthFlat;};
+	earthImageSource.onload = imageSourceLoad;
 
 	earthMaterial=new THREE.MeshPhongMaterial({
     map: earthTexture,
