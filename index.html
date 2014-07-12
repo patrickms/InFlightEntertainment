@@ -184,7 +184,7 @@ function requestAAWayArticles(callback)
 {
 var oReq = new XMLHttpRequest();
 
-oReq.onload = function(){callback(JSON.parse(this.response))};
+oReq.onload = function(){alert(this.response);callback(JSON.parse(this.response))};
 //http://dev2.admin.aapubs.com/api/HUBREST.svc/articles?near=-122.4167,37.7833&num=5&&radiusKm=250
 //oReq.open("get", "http://dev2.admin.aapubs.com/api/HUBREST.svc/articles?near=-122.4167,37.7833&num=5&&radiusKm=250", true);
 //oReq.open("get","http://jsonp.jit.su/?url=http%3A%2F%2Fgogotomcat-masstroy.rhcloud.com%2Fstatustray",true);
