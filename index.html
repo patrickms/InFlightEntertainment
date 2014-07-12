@@ -223,7 +223,7 @@ function handleAAWayArticleList(articleList)
 		
 		var oReq = new XMLHttpRequest();
 		var articleUrl=encodeURIComponent(article.Url);
-		oReq.onload = function(){console.log(this.response);handleAAWayArticle(article.Title,this.error)};
+		oReq.onload = function(){alert(this.error);handleAAWayArticle(article.Title,this.error)};
 		oReq.open("get", "http://jsonp.jit.su/?url="+articleUrl, true);
 		oReq.send();
 	}
