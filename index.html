@@ -213,7 +213,7 @@ function handleAAWayArticleList(articleList)
 	for(var i=0; i<articleList.length; i++)
 	{
 		var article=articleList[i];
-		ARTICLE_MENU.push({name:article.Title, action:function(){showArticle(article.Title);});
+		ARTICLE_MENU.push({name:article.Title, action:function(){showArticle(article.Title);}});
 		
 		var oReq = new XMLHttpRequest();
 		var articleUrl=encodeURIComponent(article.Url);
