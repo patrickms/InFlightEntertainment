@@ -428,6 +428,14 @@ function articleRender(curTime)
 				menuTexture.needsUpdate = true;
 	renderer.render( scene, camera );
 };
+function updateArticleTokenIndex()
+{
+	if(render==articleRender)
+	{
+		articleTokenIndex = (articleTokenIndex + 1)%articleTokens.length;
+		setTimeout( updateArticleTokenIndex, 60000.0/200.0);
+	}
+}
 
 function showArticle( articleName )
 {
@@ -437,7 +445,7 @@ function showArticle( articleName )
 	articleTokens=articleText.split(/[\s\n]+/);
 	articleTokenIndex=0;
 	
-	setInterval( function(){ articleTokenIndex = (articleTokenIndex + 1)%articleTokens.length; }, 60000.0/200.0);
+	setTimeout( updateArticleTokenIndex, 60000.0/200.0);
 	
 	gamepadPressed = videoGamepadPressed;
 	video.pause();
