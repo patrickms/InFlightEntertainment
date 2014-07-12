@@ -218,12 +218,11 @@ function handleAAWayArticle(articleName,response)
 	htmlTXT=replaceAll(htmlTXT, "<script","<noscript");
 	htmlTXT=replaceAll(htmlTXT, "</script","</noscript");
 	htmlTXT=htmlTXT.slice(htmlTXT.search("<body>")+6,htmlTXT.search("</body>"));
-	alert(htmlTXT);
 	//alert(response.error);
 
 	importedDiv = document.createElement('div');
 	importedDiv.innerHTML = htmlTXT;
-	var elements = importedDiv.getElementsByTagName('article-body');
+	var elements = importedDiv.getElementsByClassName('article-body');
 	ARTICLE_TEXT[articleName]=elements[0].innerText;
 }
 
