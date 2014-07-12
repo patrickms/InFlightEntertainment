@@ -145,6 +145,7 @@ var gamepad;
 var VRState = null;
 	var articleTokens;
 	var articleTokenIndex;
+	var articlePaused=false;
 
 //EARTH
 
@@ -458,6 +459,7 @@ function updateArticleTokenIndex()
 
 function showArticle( articleName )
 {
+	articlePaused = false;
 	var articleText=ARTICLE_TEXT[ articleName ];
 	if(!articleText)
 		articleText=ARTICLE_TEXT[ 'default' ];
@@ -855,6 +857,15 @@ function initControls() {
      	if(gamepad)
 		    gamepad._fire(Gamepad.Event.BUTTON_UP, Object.create({'control':"FACE_1"}));
 		break;
+     case 79:
+     	if(articleTokenIndex >= 10)
+     		articleTokenIndex -= 10;
+     	else
+     		articleTokenIndex=0;
+     	break;
+     case 80:
+     	articlePaused = !articlePaused;
+     	break;
     }
   });
 
