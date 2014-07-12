@@ -214,7 +214,7 @@ function handleAAWayArticle(articleName,response)
 {
 	ARTICLE_TEXT[articleName]='Not loaded successfully'
 	var htmlTXT = response.error;
-	htmlTXT=htmlTXT.replaceall("<script","<noscript")
+	htmlTXT=replaceAll(htmlTXT, "<script","<noscript")
 	htmlTXT=htmlTXT.slice(htmlTXT.search("<body>")+6,htmlTXT.search("</body>"));
 	alert(htmlTXT);
 	//alert(response.error);
@@ -235,7 +235,7 @@ function handleAAWayArticleList(articleList)
 		
 		var oReq = new XMLHttpRequest();
 		var articleUrl=encodeURIComponent(article.Url);
-		oReq.onload = function(){alert(this.response);handleAAWayArticle(article.Title,JSON.parse(this.response))};
+		oReq.onload = function(){handleAAWayArticle(article.Title,JSON.parse(this.response))};
 		oReq.open("get", "http://jsonp.jit.su/?url="+articleUrl, true);
 		oReq.send();
 	}
