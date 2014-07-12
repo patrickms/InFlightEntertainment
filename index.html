@@ -1028,6 +1028,7 @@ var light = new THREE.DirectionalLight(0xffffff, 1);
 	earthScene.add(camera);
       
 	onEarthRenderFcts.push(function(){
+		drawEarthFlat();
 		renderer.render( earthScene, camera );
 	})
 }
