@@ -1038,6 +1038,7 @@ function initEarth()
 		earthImageSource = document.createElement( 'img' );
 	earthImageSource.src='images/2_no_clouds_4k.jpg';
 	earthImageSource.onload = imageSourceLoad;
+	earthImageSource.onerror = function(){earthImageSource.src='images/2_no_clouds_4k.jpg?' + Math.random();};
 
 	earthMaterial=new THREE.MeshPhongMaterial({
     map: earthTexture,
