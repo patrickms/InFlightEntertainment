@@ -410,7 +410,8 @@ function articleUpdate()
 	var widthMiddle = wordMiddleMetrics.width;
 	var widthEnd = wordEndMetrics.width;
 	
-	var textHeight=wordMiddleMetrics.height;
+	//var textForHeight = menuImageContext.measureText("ABCDEFGHgyq");
+	var textHeight=60;
 	
 	var wordMiddleX = menuCanvas.width/2;
 	var wordStartX = wordMiddleX - (widthStart + widthMiddle)/2.0;
@@ -701,9 +702,9 @@ function menuRender(curTime)
 	menuImageContext.globalAlpha = 1.0;
 	menuImageContext.drawImage(aalogo,0,0,menuCanvas.width/2.0,menuCanvas.height/2.0)
 	menuImageContext.restore();
-	var wordEndMetrics = menuImageContext.measureText("Hy");
+	//var wordEndMetrics = menuImageContext.measureText("Hy");
 	
-	var textHeight=wordEndMetrics.height;
+	var textHeight=60;
 
 	//menuTexture.minFilter = THREE.LinearFilter;
 	//menuTexture.magFilter = THREE.LinearFilter;
