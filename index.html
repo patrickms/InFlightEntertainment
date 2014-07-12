@@ -1045,13 +1045,13 @@ function drawEarthFlat(){
 		console.log(PLANE_LAT, PLANE_LONG);
 	var centerX = (PLANE_LONG+180)/360.0*2048.0;
       var centerY = (90-PLANE_LAT)/180.0*2048.0;
-      var radius = 10;
+      var radius = 3;
 
       earthContext.beginPath();
       earthContext.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
       earthContext.fillStyle = 'red';
       earthContext.fill();
-      earthContext.lineWidth = 10;
+      earthContext.lineWidth = 3;
       earthContext.strokeStyle = '#FF0000';
       earthContext.stroke();
       console.log(centerX, centerY, radius);
