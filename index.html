@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<title>Video Texture (Three.js)</title>
+	<title>Avegant Glyph In Flight Entertainment Demo for American Airlines</title>
 	<meta charset="utf-8">
 	<!--<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"> -->
 	<!--<link rel=stylesheet href="css/base.css"/>-->
@@ -253,38 +253,6 @@ function showMenu(menu)
 	update = menuUpdate;
 	video.pause();
 	
-	if(menu && typeof(menu)!=='undefined' && menu!==menuState)
-	{
-		menuState=menu;
-		menuIndex=0;
-	}
-	
-	if(menuState.length<=0) menuIndex=0;
-	else menuIndex=((menuIndex%menuState.length)+menuState.length)%menuState.length;
-	
-	menuImageContext.fillStyle = '#ffffff';
-	menuImageContext.fillRect( 0, 0, menuCanvas.width, menuCanvas.height );
-	var bgimg=document.getElementById("bgimg");
-	menuImageContext.drawImage(bgimg,0,0,menuCanvas.width,menuCanvas.height)
-	var aalogo=document.getElementById("aalogo");
-	menuImageContext.save();
-	menuImageContext.globalAlpha = 1.0;
-	menuImageContext.drawImage(aalogo,0,0,menuCanvas.width/2.0,menuCanvas.height/2.0)
-	menuImageContext.restore();
-
-	//menuTexture.minFilter = THREE.LinearFilter;
-	//menuTexture.magFilter = THREE.LinearFilter;
-	//	menuImageContext.drawImage(,0,0);
-	for(i=0; i<menuState.length; i++)
-	{
-		menuImageContext.fillStyle = '#000000';
-		if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
-		else menuImageContext.font="120px Georgia";
-        menuImageContext.textAlign = 'center';
-		menuImageContext.fillText(menuState[i].name, menuCanvas.width/2,(menuCanvas.height-120.0*menuState.length)/2.0+120*(i+1));
-	}
-	movieMaterial.map=menuTexture;
-	menuTexture.needsUpdate=true;
 	
 }
 
@@ -630,7 +598,39 @@ function menuUpdate()
 }
 
 function menuRender(curTime)
-{
+{	if(menu && typeof(menu)!=='undefined' && menu!==menuState)
+	{
+		menuState=menu;
+		menuIndex=0;
+	}
+	
+	if(menuState.length<=0) menuIndex=0;
+	else menuIndex=((menuIndex%menuState.length)+menuState.length)%menuState.length;
+	
+	menuImageContext.fillStyle = '#ffffff';
+	menuImageContext.fillRect( 0, 0, menuCanvas.width, menuCanvas.height );
+	var bgimg=document.getElementById("bgimg");
+	menuImageContext.drawImage(bgimg,0,0,menuCanvas.width,menuCanvas.height)
+	var aalogo=document.getElementById("aalogo");
+	menuImageContext.save();
+	menuImageContext.globalAlpha = 1.0;
+	menuImageContext.drawImage(aalogo,0,0,menuCanvas.width/2.0,menuCanvas.height/2.0)
+	menuImageContext.restore();
+
+	//menuTexture.minFilter = THREE.LinearFilter;
+	//menuTexture.magFilter = THREE.LinearFilter;
+	//	menuImageContext.drawImage(,0,0);
+	for(i=0; i<menuState.length; i++)
+	{
+		menuImageContext.fillStyle = '#000000';
+		if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
+		else menuImageContext.font="120px Georgia";
+        menuImageContext.textAlign = 'center';
+		menuImageContext.fillText(menuState[i].name, menuCanvas.width/2,(menuCanvas.height-120.0*menuState.length)/2.0+120*(i+1));
+	}
+	movieMaterial.map=menuTexture;
+	menuTexture.needsUpdate=true;
+
 	menuTexture.needsUpdate = true;
 	renderer.render( scene, camera );
 	//riftEffect.render( scene, camera );
