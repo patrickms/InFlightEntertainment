@@ -390,7 +390,7 @@ function articleUpdate()
 	menuImageContext.drawImage(aalogo,0,0,menuCanvas.width/2.0,menuCanvas.height/2.0)
 	menuImageContext.restore();
 	//if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
-	menuImageContext.font="90px Georgia";
+	menuImageContext.font="60px Georgia";
 	menuImageContext.textAlign = 'center';
 	
 	menuImageContext.fillStyle = '#000000';
@@ -401,7 +401,7 @@ function articleUpdate()
 	
 	
 	var wordStartMetrics = menuImageContext.measureText(wordStart);
-	menuImageContext.font="90px Georgia";
+	menuImageContext.font="60px Georgia";
 	var wordMiddleMetrics = menuImageContext.measureText(wordMiddle);
 	menuImageContext.font="90px Georgia";
 	var wordEndMetrics = menuImageContext.measureText(wordEnd);
@@ -706,7 +706,7 @@ function menuRender(curTime)
 	for(i=0; i<menuState.length; i++)
 	{
 		menuImageContext.fillStyle = '#000000';
-		if(i==menuIndex) menuImageContext.font="bold 120px Georgia";
+		if(i==menuIndex) menuImageContext.font="bold 60px Georgia";
 		else menuImageContext.font="120px Georgia";
         menuImageContext.textAlign = 'center';
 		menuImageContext.fillText(menuState[i].name, menuCanvas.width/2,(menuCanvas.height-120.0*menuState.length)/2.0+120*(i+1));
