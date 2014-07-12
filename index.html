@@ -264,6 +264,10 @@ function showMenu(menu)
 	
 	menuImageContext.fillStyle = '#ffffff';
 	menuImageContext.fillRect( 0, 0, menuCanvas.width, menuCanvas.height );
+	var bgimg=document.getElementById("bgimg");
+	menuImageContext.drawImage(bgimg,0,0,menuCanvas.width,menuCanvas.height)
+	var aalogo=document.getElementById("aalogo");
+	menuImageContext.drawImage(aalogo,0,0,menuCanvas.width/2.0,menuCanvas.height/2.0)
 
 	//menuTexture.minFilter = THREE.LinearFilter;
 	//menuTexture.magFilter = THREE.LinearFilter;
