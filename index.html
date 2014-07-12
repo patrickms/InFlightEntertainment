@@ -215,7 +215,8 @@ function handleAAWayArticle(articleName,response)
 {
 	ARTICLE_TEXT[articleName]='Not loaded successfully'
 	var htmlTXT = response.error;
-	htmlTXT=replaceAll(htmlTXT, "<script","<noscript")
+	htmlTXT=replaceAll(htmlTXT, "<script","<noscript");
+	htmlTXT=replaceAll(htmlTXT, "</script","</noscript");
 	htmlTXT=htmlTXT.slice(htmlTXT.search("<body>")+6,htmlTXT.search("</body>"));
 	alert(htmlTXT);
 	//alert(response.error);
