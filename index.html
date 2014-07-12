@@ -106,6 +106,8 @@ var ARTICLE_TEXT={'default': ["In Xanadu did Kubla Khan",
 				"And here were forests ancient as the hills,",
 				"Enfolding sunny spots of greenery."].join('\n')
 			};
+			
+var ARTICLE_IMAGES={};
 
 var MOUSE_SPEED = 0.005;
 var KEYBOARD_SPEED = 0.02;
@@ -236,7 +238,7 @@ function handleAAWayArticleList(articleList)
 	{
 		var article=articleList[i];
 		ARTICLE_MENU.push({name:article.Title, action:function(){showArticle(article.Title);}});
-		
+		ARTICLE_IMAGES[ article.Title ] = article.ImageUrl;
 		var oReq = new XMLHttpRequest();
 		var articleUrl=encodeURIComponent(article.Url);
 		oReq.onload = function(){handleAAWayArticle(article.Title,JSON.parse(this.response))};
@@ -384,7 +386,7 @@ function articleUpdate()
 	menuState=ARTICLE_MENU;
 	menuImageContext.fillStyle = '#ffffff';
 	menuImageContext.fillRect( 0, 0, menuCanvas.width, menuCanvas.height );
-	var bgimg=document.getElementById("bgimg");
+	var bgimg=document.getElementById("articleimg");
 	menuImageContext.drawImage(bgimg,0,0,menuCanvas.width,menuCanvas.height)
 	var aalogo=document.getElementById("aalogo");
 	menuImageContext.save();
@@ -451,6 +453,9 @@ function showArticle( articleName )
 	var articleText=ARTICLE_TEXT[ articleName ];
 	if(!articleText)
 		articleText=ARTICLE_TEXT[ 'default' ];
+	var artImgSrc=ARTICLE_IMAGES[ articleName ];
+	if(artImgSrc)
+		articleImg.src=artImgSrc;
 	articleTokens=articleText.split(/[\s\n]+/);
 	articleTokenIndex=0;
 	
@@ -1188,5 +1193,6 @@ animate();
 <div id="viewer"></div>
 <img id="aalogo" src="images/new-american-logo-1024x707.png" style="display: none"></img>
 <img id="bgimg" src="images/unnamed.jpg" style="display: none"></img>
+<img id="articleimg" src="images/unnamed.jpg" style="display: none"></img>
 </body>
 </html>
