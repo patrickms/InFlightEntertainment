@@ -374,8 +374,9 @@ function articleUpdate()
 		    bestLetter = 4; // fourth
 		    break;
 		default:
-		    bestLetter = 5; // fifth
+		    bestLetter = length/2; // fifth
 	};
+	menuState=ARTICLE_MENU;
 	menuImageContext.fillStyle = '#ffffff';
 	menuImageContext.fillRect( 0, 0, menuCanvas.width, menuCanvas.height );
 	var bgimg=document.getElementById("bgimg");
