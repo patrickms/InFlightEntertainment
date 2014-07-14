@@ -446,7 +446,7 @@ function articleUpdate()
 function articleRender(curTime)
 {
 				menuTexture.needsUpdate = true;
-	renderer.render( scene, camera );
+	riftEffect.render( scene, camera );
 };
 function updateArticleTokenIndex()
 {
@@ -696,8 +696,8 @@ function videoRender(curTime)
 			videoTexture.needsUpdate = true;
 	}
 
-	//renderer.render( scene, camera );
-	renderer.render( scene, camera );
+	//riftEffect.render( scene, camera );
+	riftEffect.render( scene, camera );
 };
 
 function menuUpdate()
@@ -742,7 +742,7 @@ function menuRender(curTime)
 	menuTexture.needsUpdate=true;
 
 	menuTexture.needsUpdate = true;
-	renderer.render( scene, camera );
+	riftEffect.render( scene, camera );
 	//riftEffect.render( scene, camera );
 };
 
@@ -1067,7 +1067,7 @@ var light = new THREE.DirectionalLight(0xffffff, 1);
       
 	onEarthRenderFcts.push(function(){
 		drawEarthFlat();
-		renderer.render( earthScene, camera );
+		riftEffect.render( earthScene, camera );
 	})
 }
 
@@ -1185,7 +1185,7 @@ function initEarthComplex()
 	//		render the earthScene						//
 	//////////////////////////////////////////////////////////////////////////////////
 	onEarthRenderFcts.push(function(){
-		renderer.render( earthScene, camera );		
+		riftEffect.render( earthScene, camera );		
 	})
 }
 	
