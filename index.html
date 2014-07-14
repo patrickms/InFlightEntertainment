@@ -165,6 +165,9 @@ var containerEarth	= new THREE.Object3D()
 var moonMesh	= THREEx.Planets.createMoon()
 var earthMesh	= THREEx.Planets.createEarth()
 
+var GyroRotation = new THREE.Quaternion();
+var GyroRotationEuler = new THREE.Euler();
+
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//		loop runner							//
@@ -192,6 +195,44 @@ function deltaAngleDeg(a,b) {
 function deltaAngleRas(a,b) {
   // todo
 }
+
+
+function deviceOrientationHandler(gamma, beta, alpha)
+{
+	rotationOrder='XYZ'; //'YXZ'
+	if(!GyroRotationEulerInitial)
+		GyroRotationEulerInitial=new THREE.Euler(alpha*Math.PI/180.0, -beta*Math.PI/180.0, gamma*Math.PI/180.0, rotationOrder );
+	x=new THREE.Quaternion();
+	x.setFromEuler(GyroRotationEulerInitial);
+	GyroRotationEuler.set(alpha*Math.PI/180.0, 
+							-beta*Math.PI/180.0, 
+							gamma*Math.PI/180.0, rotationOrder );
+    y=new THREE.Quaternion();
+	y.setFromEuler(GyroRotationEuler);
+	z=x.inverse();
+	q=y.multiply(z);
+	GyroRotationEuler.setFromQuaternion(q);
+
+}	
+
+if (window.DeviceOrientationEvent) {
+	// Listen for the deviceorientation event and handle the raw data
+	window.addEventListener('deviceorientation', function(eventData) {
+	  // gamma is the left-to-right tilt in degrees, where right is positive
+  var tiltLR = eventData.gamma;
+  
+  // beta is the front-to-back tilt in degrees, where front is positive
+  var tiltFB = eventData.beta;
+  
+  // alpha is the compass direction the device is facing in degrees
+  var dir = eventData.alpha
+  
+  // call our orientation event handler
+  deviceOrientationHandler(tiltLR, tiltFB, dir);
+}, false);
+} else alert('No DeviceOrientationEvent available');
+
+
 
 function escapeRegExp(string) {
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
