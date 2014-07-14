@@ -750,11 +750,16 @@ function menuRender(curTime)
 function animate( curTime ) 
 {
     requestAnimationFrame( animate );
+    var hmdRotationSet=false;
   if (VRState !== null) {
     if (vr.pollState(VRState)) {
       HMDRotation.set(VRState.hmd.rotation[0], VRState.hmd.rotation[1], VRState.hmd.rotation[2], VRState.hmd.rotation[3]);
+      hmdRotationSet=True;
     }
   }
+  
+  if(!hmdRotationSet)
+	HMDRotation.setFromEuler(GyroRotationEuler);
 
   // Compute move vector
   moveVector.addVectors(keyboardMoveVector, gamepadMoveVector);
